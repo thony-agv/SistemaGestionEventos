@@ -1,0 +1,70 @@
+﻿
+@model SistemaGestionEventos.Models.TipoEntrada
+
+@{
+    ViewBag.Title = "Detalles del tipo de entrada";
+}
+
+<div class="ef-page">
+
+    <div class="ef-header">
+        <div>
+            <h2>Detalles de la categoría</h2>
+            <p>Información del tipo de entrada seleccionado.</p>
+        </div>
+    </div>
+
+    <div class="ef-card ef-form-card">
+
+        <h4>@Model.Nombre</h4>
+
+        <table class="table ef-table">
+            <tbody>
+
+                <tr>
+                    <th>Identificador</th>
+                    <td>@Model.Id</td>
+                </tr>
+
+                <tr>
+                    <th>Tipo de entrada</th>
+                    <td>@Model.Nombre</td>
+                </tr>
+
+                <tr>
+                    <th>Evento asociado</th>
+                    <td>@ViewBag.NombreEvento</td>
+                </tr>
+
+                <tr>
+                    <th>Descripción</th>
+                    <td>
+                        @(string.IsNullOrWhiteSpace(Model.Descripcion)
+                            ? "Sin descripción"
+                            : Model.Descripcion)
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
+
+        <div class="ef-form-actions">
+
+            @Html.ActionLink("Editar categoría",
+                "Editar", "TiposEntrada",
+                new { id = Model.Id },
+                new { @class = "ef-btn ef-btn-secondary" })
+
+            @Html.ActionLink("Ver evento",
+                "Detalles", "Eventos",
+                new { id = Model.EventoId },
+                new { @class = "ef-btn ef-btn-primary" })
+
+            @Html.ActionLink("Volver al listado",
+                "Index", "TiposEntrada", null,
+                new { @class = "ef-btn ef-btn-soft" })
+
+        </div>
+
+    </div>
+</div>

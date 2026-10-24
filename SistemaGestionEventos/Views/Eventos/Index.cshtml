@@ -1,0 +1,160 @@
+﻿
+@model List<SistemaGestionEventos.Models.Evento>
+@using System.Collections.Generic
+
+@{
+    ViewBag.Title = "Eventos";
+
+    var inscritos = ViewBag.Inscritos
+        as Dictionary<int, int>
+        ?? new Dictionary<int, int>();
+
+    var disponibles = ViewBag.Disponibles
+        as Dictionary<int, int>
+        ?? new Dictionary<int, int>();
+}
+
+<div class="ef-page">
+
+    <div class="ef-header">
+        <div>
+            <h2>Gestión de Eventos</h2>
+            <p>Administra los eventos y controla su capacidad.</p>
+        </div>
+
+        @Html.ActionLink("Nuevo evento", "Crear",
+            "Eventos", null,
+            new { @class = "ef-btn ef-btn-primary" })
+    </div>
+
+    @if (TempData["MensajeExito"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["MensajeExito"]
+        </div>
+    }
+
+    @if (TempData["MensajeError"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["MensajeError"]
+        </div>
+    }
+
+    @if (ViewBag.MensajeError != null)
+    {
+        <div class="alert alert-danger">
+            @ViewBag.MensajeError
+        </div>
+    }
+
+    <div class="ef-card">
+        <div class="table-responsive">
+            <table class="table ef-table">
+                <thead>
+                    <tr>
+                        <th>Evento</th>
+                        <th>Fecha de inicio</th>
+                        <th>Capacidad</th>
+                        <th>Inscritos</th>
+                        <th>Disponibles</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (Model != null && Model.Count > 0)
+                    {
+                        foreach (var evento in Model)
+                        {
+                            int totalInscritos =
+                                inscritos.ContainsKey(evento.Id)
+                                ? inscritos[evento.Id] : 0;
+
+                            int cupos =
+                                disponibles.ContainsKey(evento.Id)
+                                ? disponibles[evento.Id] : 0;
+
+                            <tr>
+                                <td>
+                                    <strong>@evento.Nombre</strong>
+                                    <div class="ef-muted">
+                                        @evento.Lugar
+                                    </div>
+                                </td>
+
+                                <td>
+                                    @(evento.FechaInicio.HasValue
+                                        ? evento.FechaInicio.Value.ToString(
+                                            "dd/MM/yyyy HH:mm")
+                                        : "-")
+                                </td>
+
+                                <td>@evento.CapacidadMaxima</td>
+                                <td>@totalInscritos</td>
+                                <td>@cupos</td>
+
+                                <td>
+                                    @if (evento.Estado == "Abierto")
+                                    {
+                                        <span class="ef-status ef-status-open">
+                                            Abierto
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="ef-status ef-status-closed">
+                                            Cerrado
+                                        </span>
+                                    }
+                                </td>
+
+                                <td>
+                                    <div class="ef-actions">
+
+                                        @Html.ActionLink("Detalles",
+                                            "Detalles",
+                                            new { id = evento.Id },
+                                            new
+                                                 {
+                                                @class = "ef-btn ef-btn-soft ef-btn-sm"
+                                            })
+
+                                        @if (evento.Estado == "Abierto")
+                                        {
+                                            @Html.ActionLink("Editar",
+                                                "Editar",
+                                                new { id = evento.Id },
+                                                new
+                                                     {
+                                                    @class = "ef-btn ef-btn-secondary ef-btn-sm"
+                                                })
+                                        }
+
+                                        @Html.ActionLink("Eliminar",
+                                            "Eliminar",
+                                            new { id = evento.Id },
+                                            new
+                                                 {
+                                                @class = "ef-btn ef-btn-danger ef-btn-sm"
+                                            })
+
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center py-4">
+                                No hay eventos registrados.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

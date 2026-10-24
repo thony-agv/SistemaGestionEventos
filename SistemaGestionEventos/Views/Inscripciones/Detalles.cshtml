@@ -1,0 +1,101 @@
+﻿
+@model SistemaGestionEventos.Models.Inscripcion
+
+@{
+    ViewBag.Title = "Detalles de inscripción";
+}
+
+<div class="ef-page">
+
+    <div class="ef-header">
+        <div>
+            <h2>Detalles de inscripción</h2>
+            <p>Información del registro seleccionado.</p>
+        </div>
+
+        @if (Model.Estado == "Activa")
+        {
+            <span class="ef-status ef-status-open">
+                Activa
+            </span>
+        }
+        else
+        {
+            <span class="ef-status ef-status-closed">
+                Cancelada
+            </span>
+        }
+    </div>
+
+    <div class="ef-card ef-form-card">
+
+        <h4>Inscripción #@Model.Id</h4>
+
+        <table class="table ef-table">
+            <tbody>
+
+                <tr>
+                    <th>Participante</th>
+                    <td>@Model.NombreParticipante</td>
+                </tr>
+
+                <tr>
+                    <th>Evento</th>
+                    <td>@Model.NombreEvento</td>
+                </tr>
+
+                <tr>
+                    <th>Tipo de entrada</th>
+                    <td>@Model.NombreTipoEntrada</td>
+                </tr>
+
+                <tr>
+                    <th>Fecha de inscripción</th>
+                    <td>
+                        @Model.FechaInscripcion.ToString(
+                            "dd/MM/yyyy HH:mm")
+                    </td>
+                </tr>
+
+                <tr>
+                    <th>Estado</th>
+                    <td>@Model.Estado</td>
+                </tr>
+
+            </tbody>
+        </table>
+
+        <div class="ef-form-actions">
+
+            @Html.ActionLink("Volver al listado",
+                "Index", "Inscripciones",
+                new { eventoId = Model.EventoId },
+                new { @class = "ef-btn ef-btn-soft" })
+
+            @Html.ActionLink("Consultar evento",
+                "Detalles", "Eventos",
+                new { id = Model.EventoId },
+                new { @class = "ef-btn ef-btn-secondary" })
+
+            @if (Model.Estado == "Activa")
+            {
+                using (Html.BeginForm(
+                    "Cancelar",
+                    "Inscripciones",
+                    new { id = Model.Id },
+                    FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+
+                    <button type="submit"
+                            class="ef-btn ef-btn-danger"
+                            onclick="return confirm('¿Deseas cancelar esta inscripción?');">
+                        Cancelar inscripción
+                    </button>
+                }
+            }
+
+        </div>
+
+    </div>
+</div>

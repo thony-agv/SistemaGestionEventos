@@ -1,0 +1,83 @@
+﻿
+@model SistemaGestionEventos.Models.Participante
+
+@{
+    ViewBag.Title = "Eliminar participante";
+}
+
+<div class="ef-page">
+
+    <div class="ef-header">
+        <div>
+            <h2>Eliminar participante</h2>
+            <p>Confirma la eliminación del registro seleccionado.</p>
+        </div>
+    </div>
+
+    <div class="ef-card ef-form-card">
+
+        <div class="alert alert-warning">
+            Esta operación no se puede deshacer.
+            Si el participante tiene inscripciones
+            relacionadas, no podrá eliminarse.
+        </div>
+
+        <h4>@Model.NombreCompleto</h4>
+
+        <table class="table ef-table">
+            <tbody>
+
+                <tr>
+                    <th>Documento</th>
+                    <td>@Model.Documento</td>
+                </tr>
+
+                <tr>
+                    <th>Nombre</th>
+                    <td>@Model.NombreCompleto</td>
+                </tr>
+
+                <tr>
+                    <th>Correo</th>
+                    <td>
+                        @(string.IsNullOrWhiteSpace(Model.Correo)
+                            ? "No registrado"
+                            : Model.Correo)
+                    </td>
+                </tr>
+
+                <tr>
+                    <th>Teléfono</th>
+                    <td>
+                        @(string.IsNullOrWhiteSpace(Model.Telefono)
+                            ? "No registrado"
+                            : Model.Telefono)
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
+
+        @using (Html.BeginForm("Eliminar", "Participantes",
+            new { id = Model.Id }, FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="ef-form-actions">
+
+                <button type="submit"
+                        class="ef-btn ef-btn-danger"
+                        onclick="return confirm('¿Estás seguro de eliminar este participante?');">
+                    Confirmar eliminación
+                </button>
+
+                @Html.ActionLink("Cancelar", "Index",
+                    "Participantes", null,
+                    new { @class = "ef-btn ef-btn-soft" })
+
+            </div>
+        }
+
+    </div>
+
+</div>

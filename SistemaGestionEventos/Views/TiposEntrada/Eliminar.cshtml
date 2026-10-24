@@ -1,0 +1,73 @@
+﻿
+@model SistemaGestionEventos.Models.TipoEntrada
+
+@{
+    ViewBag.Title = "Eliminar tipo de entrada";
+}
+
+<div class="ef-page">
+
+    <div class="ef-header">
+        <div>
+            <h2>Eliminar tipo de entrada</h2>
+            <p>Confirma la eliminación de esta categoría.</p>
+        </div>
+    </div>
+
+    <div class="ef-card ef-form-card">
+
+        <div class="alert alert-warning">
+            Esta operación no se puede deshacer.
+            No podrás eliminar categorías con inscripciones
+            relacionadas ni categorías de eventos cerrados.
+        </div>
+
+        <h4>@Model.Nombre</h4>
+
+        <table class="table ef-table">
+            <tbody>
+
+                <tr>
+                    <th>Tipo de entrada</th>
+                    <td>@Model.Nombre</td>
+                </tr>
+
+                <tr>
+                    <th>Evento asociado</th>
+                    <td>@ViewBag.NombreEvento</td>
+                </tr>
+
+                <tr>
+                    <th>Descripción</th>
+                    <td>
+                        @(string.IsNullOrWhiteSpace(Model.Descripcion)
+                            ? "Sin descripción"
+                            : Model.Descripcion)
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
+
+        @using (Html.BeginForm("Eliminar", "TiposEntrada",
+            new { id = Model.Id }, FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="ef-form-actions">
+
+                <button type="submit"
+                        class="ef-btn ef-btn-danger"
+                        onclick="return confirm('¿Deseas eliminar definitivamente esta categoría?');">
+                    Confirmar eliminación
+                </button>
+
+                @Html.ActionLink("Cancelar", "Index",
+                    "TiposEntrada", null,
+                    new { @class = "ef-btn ef-btn-soft" })
+
+            </div>
+        }
+
+    </div>
+</div>

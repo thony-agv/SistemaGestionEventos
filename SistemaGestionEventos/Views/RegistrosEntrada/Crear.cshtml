@@ -1,0 +1,180 @@
+﻿
+@model SistemaGestionEventos.Models.RegistroEntrada
+@using System.Web.Mvc
+
+@{
+    ViewBag.Title = "Registrar ingreso";
+}
+
+<div class="ef-page">
+
+    <div class="ef-header">
+        <div>
+            <h2>Registrar ingreso</h2>
+            <p>Valida la inscripción y registra la entrada del participante.</p>
+        </div>
+    </div>
+
+    <div class="ef-card ef-form-card">
+
+        @using (Html.BeginForm("Crear", "RegistrosEntrada",
+            FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+
+            @Html.ValidationSummary(true, "",
+                new { @class = "text-danger" })
+
+            <div class="row">
+
+                <div class="col-md-12 ef-field">
+
+                    <label class="form-label">
+                        Seleccionar evento
+                    </label>
+
+                    @Html.DropDownListFor(
+                        m => m.EventoId,
+                        (IEnumerable<SelectListItem>)ViewBag.Eventos,
+                        "Seleccione un evento",
+                        new
+                             {
+                            @class = "form-control",
+                            id = "EventoId"
+                        })
+
+                </div>
+
+                <div class="col-md-12 ef-field">
+
+                    <label class="form-label">
+                        Participante con inscripción activa
+                    </label>
+
+                    @Html.DropDownListFor(
+                        m => m.InscripcionId,
+                        (IEnumerable<SelectListItem>)
+                            ViewBag.Inscripciones,
+                        "Seleccione un participante",
+                        new
+                             {
+                            @class = "form-control",
+                            id = "InscripcionId"
+                        })
+
+                    @Html.ValidationMessageFor(
+                        m => m.InscripcionId,
+                        "",
+                        new { @class = "text-danger" })
+
+                    <p class="ef-muted mt-2">
+                        Solo se mostrarán los participantes
+                        que aún no tienen entrada registrada.
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="ef-form-actions">
+
+                <button type="submit"
+                        class="ef-btn ef-btn-primary">
+                    Confirmar ingreso
+                </button>
+
+                @Html.ActionLink("Cancelar",
+                    "Index", "RegistrosEntrada", null,
+                    new { @class = "ef-btn ef-btn-soft" })
+
+            </div>
+        }
+
+        <hr />
+
+        <div class="ef-help">
+
+            <strong>Control de acceso</strong>
+
+            <p class="ef-muted">
+                Para ingresar, el participante debe tener
+                una inscripción activa en un evento abierto
+                y no haber registrado su entrada previamente.
+            </p>
+
+            @Html.ActionLink("Consultar inscripciones",
+                "Index", "Inscripciones", null,
+                new { @class = "ef-btn ef-btn-soft ef-btn-sm" })
+
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script>
+        $(document).ready(function () {
+
+            $("#EventoId").on("change", function () {
+
+                var eventoId = $(this).val();
+                var lista = $("#InscripcionId");
+
+                lista.empty();
+
+                lista.append(
+                    $("<option></option>")
+                        .val("")
+                        .text("Seleccione un participante")
+                );
+
+                if (!eventoId) {
+                    return;
+                }
+
+                lista.prop("disabled", true);
+
+                $.getJSON(
+                    '@Url.Action("InscripcionesDisponibles",
+                                 "RegistrosEntrada")',
+                    { eventoId: eventoId }
+                )
+                .done(function (inscripciones) {
+
+                    $.each(inscripciones, function (indice, item) {
+
+                        lista.append(
+                            $("<option></option>")
+                                .val(item.id)
+                                .text(item.nombre)
+                        );
+
+                    });
+
+                    if (inscripciones.length === 0) {
+                        lista.append(
+                            $("<option></option>")
+                                .val("")
+                                .text("No hay inscripciones disponibles")
+                                .prop("disabled", true)
+                        );
+                    }
+
+                })
+                .fail(function () {
+                    alert(
+                        "No se pudieron cargar las inscripciones."
+                    );
+                })
+                .always(function () {
+                    lista.prop("disabled", false);
+                });
+
+            });
+
+        });
+    </script>
+}

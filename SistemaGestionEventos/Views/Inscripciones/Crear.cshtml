@@ -1,0 +1,201 @@
+﻿
+@model SistemaGestionEventos.Models.Inscripcion
+@using System.Web.Mvc
+
+@{
+    ViewBag.Title = "Nueva inscripción";
+}
+
+<div class="ef-page">
+
+    <div class="ef-header">
+        <div>
+            <h2>Registrar inscripción</h2>
+            <p>Asigna un participante a un evento disponible.</p>
+        </div>
+    </div>
+
+    <div class="ef-card ef-form-card">
+
+        @using (Html.BeginForm("Crear", "Inscripciones",
+            FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+
+            @Html.ValidationSummary(true, "",
+                new { @class = "text-danger" })
+
+            <div class="row">
+
+                <div class="col-md-12 ef-field">
+
+                    @Html.LabelFor(m => m.EventoId,
+                        new { @class = "form-label" })
+
+                    @Html.DropDownListFor(
+                        m => m.EventoId,
+                        (IEnumerable<SelectListItem>)ViewBag.Eventos,
+                        "Seleccione un evento",
+                        new
+                             {
+                            @class = "form-control",
+                            id = "EventoId"
+                        })
+
+                    @Html.ValidationMessageFor(m => m.EventoId,
+                        "", new { @class = "text-danger" })
+
+                </div>
+
+                <div class="col-md-12 ef-field">
+
+                    @Html.LabelFor(m => m.ParticipanteId,
+                        new { @class = "form-label" })
+
+                    @Html.DropDownListFor(
+                        m => m.ParticipanteId,
+                        (IEnumerable<SelectListItem>)
+                            ViewBag.Participantes,
+                        "Seleccione un participante",
+                        new { @class = "form-control" })
+
+                    @Html.ValidationMessageFor(m => m.ParticipanteId,
+                        "", new { @class = "text-danger" })
+
+                </div>
+
+                <div class="col-md-12 ef-field">
+
+                    @Html.LabelFor(m => m.TipoEntradaId,
+                        new { @class = "form-label" })
+
+                    @Html.DropDownListFor(
+                        m => m.TipoEntradaId,
+                        (IEnumerable<SelectListItem>)
+                            ViewBag.TiposEntrada,
+                        "Seleccione un tipo de entrada",
+                        new
+                             {
+                            @class = "form-control",
+                            id = "TipoEntradaId"
+                        })
+
+                    @Html.ValidationMessageFor(m => m.TipoEntradaId,
+                        "", new { @class = "text-danger" })
+
+                    <p class="ef-muted mt-2">
+                        Las categorías disponibles dependen
+                        del evento seleccionado.
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="ef-form-actions">
+
+                <button type="submit"
+                        class="ef-btn ef-btn-primary">
+                    Registrar inscripción
+                </button>
+
+                @Html.ActionLink("Cancelar",
+                    "Index", "Inscripciones", null,
+                    new { @class = "ef-btn ef-btn-soft" })
+
+            </div>
+        }
+
+        <hr />
+
+        <div class="ef-help">
+            <strong>¿Falta algún registro?</strong>
+
+            <p class="ef-muted">
+                Antes de inscribir una persona, debes tener
+                registrado su participante y al menos un
+                tipo de entrada para el evento.
+            </p>
+
+            <div class="ef-actions">
+
+                @Html.ActionLink("Registrar participante",
+                    "Crear", "Participantes", null,
+                    new { @class = "ef-btn ef-btn-soft ef-btn-sm" })
+
+                @Html.ActionLink("Crear tipo de entrada",
+                    "Crear", "TiposEntrada", null,
+                    new { @class = "ef-btn ef-btn-soft ef-btn-sm" })
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script>
+        $(document).ready(function () {
+
+            $("#EventoId").on("change", function () {
+
+                var eventoId = $(this).val();
+                var listaTipos = $("#TipoEntradaId");
+
+                listaTipos.empty();
+
+                listaTipos.append(
+                    $("<option></option>")
+                        .val("")
+                        .text("Seleccione un tipo de entrada")
+                );
+
+                if (!eventoId) {
+                    return;
+                }
+
+                listaTipos.prop("disabled", true);
+
+                $.getJSON(
+                    '@Url.Action("TiposPorEvento", "Inscripciones")',
+                    { eventoId: eventoId }
+                )
+                .done(function (tipos) {
+
+                    $.each(tipos, function (indice, tipo) {
+
+                        listaTipos.append(
+                            $("<option></option>")
+                                .val(tipo.id)
+                                .text(tipo.nombre)
+                        );
+
+                    });
+
+                    if (tipos.length === 0) {
+                        listaTipos.append(
+                            $("<option></option>")
+                                .val("")
+                                .text("No hay categorías disponibles")
+                                .prop("disabled", true)
+                        );
+                    }
+
+                })
+                .fail(function () {
+                    alert(
+                        "No se pudieron cargar los tipos de entrada."
+                    );
+                })
+                .always(function () {
+                    listaTipos.prop("disabled", false);
+                });
+
+            });
+
+        });
+    </script>
+}

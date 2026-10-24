@@ -1,0 +1,166 @@
+﻿
+@model List<SistemaGestionEventos.Models.RegistroEntrada>
+@using System.Web.Mvc
+@using System.Linq
+@using System.Collections.Generic
+
+
+@{
+    ViewBag.Title = "Control de entradas";
+}
+
+<div class="ef-page">
+
+    <div class="ef-header">
+        <div>
+            <h2>Control de Entradas</h2>
+            <p>Consulta y administra los ingresos a los eventos.</p>
+        </div>
+
+        @Html.ActionLink("Registrar ingreso",
+            "Crear", "RegistrosEntrada", null,
+            new { @class = "ef-btn ef-btn-primary" })
+    </div>
+
+    @if (TempData["MensajeExito"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["MensajeExito"]
+        </div>
+    }
+
+    @if (TempData["MensajeError"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["MensajeError"]
+        </div>
+    }
+
+    <div class="ef-stats">
+
+        <div class="ef-stat">
+            <span>Ingresos mostrados</span>
+            <strong>@(Model != null ? Model.Count : 0)</strong>
+        </div>
+
+        <div class="ef-stat">
+            <span>Eventos representados</span>
+            <strong>
+                @(Model != null
+                    ? Model.Select(x => x.EventoId).Distinct().Count()
+                    : 0)
+            </strong>
+        </div>
+
+    </div>
+
+    <div class="ef-card">
+
+        <h4>Historial de ingresos</h4>
+
+        @using (Html.BeginForm("Index", "RegistrosEntrada",
+            FormMethod.Get))
+        {
+            <div class="row">
+
+                <div class="col-md-6 ef-field">
+                    <label class="form-label">Filtrar por evento</label>
+
+                    @Html.DropDownList(
+                        "eventoId",
+                        (IEnumerable<SelectListItem>)ViewBag.EventosFiltro,
+                        "Todos los eventos",
+                        new { @class = "form-control" })
+                </div>
+
+                <div class="col-md-6 ef-filter-actions">
+
+                    <button type="submit"
+                            class="ef-btn ef-btn-primary">
+                        Filtrar
+                    </button>
+
+                    @Html.ActionLink("Limpiar",
+                        "Index", "RegistrosEntrada", null,
+                        new { @class = "ef-btn ef-btn-soft" })
+
+                </div>
+
+            </div>
+        }
+
+        <div class="table-responsive">
+
+            <table class="table ef-table">
+                <thead>
+                    <tr>
+                        <th>Participante</th>
+                        <th>Evento</th>
+                        <th>Tipo de entrada</th>
+                        <th>Fecha de ingreso</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @if (Model != null && Model.Count > 0)
+                    {
+                        foreach (var registro in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <strong>
+                                        @registro.NombreParticipante
+                                    </strong>
+                                </td>
+
+                                <td>@registro.NombreEvento</td>
+
+                                <td>@registro.NombreTipoEntrada</td>
+
+                                <td>
+                                    @registro.FechaIngreso.ToString(
+                                        "dd/MM/yyyy HH:mm")
+                                </td>
+
+                                <td>
+                                    <span class="ef-status ef-status-open">
+                                        Ingreso registrado
+                                    </span>
+                                </td>
+
+                                <td>
+                                    @Html.ActionLink("Detalles",
+                                        "Detalles",
+                                        new { id = registro.Id },
+                                        new
+                                             {
+                                            @class = "ef-btn ef-btn-soft ef-btn-sm"
+                                        })
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center">
+                                <div class="ef-empty">
+                                    <h4>No hay ingresos registrados</h4>
+                                    <p class="ef-muted">
+                                        Registra la entrada de un
+                                        participante para comenzar.
+                                    </p>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>

@@ -1,0 +1,102 @@
+﻿
+@model SistemaGestionEventos.Models.TipoEntrada
+
+@{
+    ViewBag.Title = "Editar tipo de entrada";
+}
+
+<div class="ef-page">
+
+    <div class="ef-header">
+        <div>
+            <h2>Editar tipo de entrada</h2>
+            <p>Modifica la información de la categoría.</p>
+        </div>
+    </div>
+
+    <div class="ef-card ef-form-card">
+
+        @using (Html.BeginForm("Editar", "TiposEntrada",
+            FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.Id)
+            @Html.HiddenFor(m => m.EventoId)
+
+            @Html.ValidationSummary(true, "",
+                new { @class = "text-danger" })
+
+            <div class="row">
+
+                <div class="col-md-12 ef-field">
+
+                    <label class="form-label">Evento asociado</label>
+
+                    <input type="text"
+                           class="form-control"
+                           value="@ViewBag.NombreEvento"
+                           disabled="disabled" />
+
+                    <p class="ef-muted mt-2">
+                        No es posible cambiar el evento asociado.
+                    </p>
+
+                </div>
+
+                <div class="col-md-12 ef-field">
+
+                    @Html.LabelFor(m => m.Nombre,
+                        new { @class = "form-label" })
+
+                    @Html.TextBoxFor(m => m.Nombre,
+                        new
+                             {
+                            @class = "form-control",
+                            maxlength = "100"
+                        })
+
+                    @Html.ValidationMessageFor(m => m.Nombre,
+                        "", new { @class = "text-danger" })
+
+                </div>
+
+                <div class="col-md-12 ef-field">
+
+                    @Html.LabelFor(m => m.Descripcion,
+                        new { @class = "form-label" })
+
+                    @Html.TextAreaFor(m => m.Descripcion,
+                        new
+                             {
+                            @class = "form-control",
+                            rows = "4",
+                            maxlength = "500"
+                        })
+
+                    @Html.ValidationMessageFor(m => m.Descripcion,
+                        "", new { @class = "text-danger" })
+
+                </div>
+
+            </div>
+
+            <div class="ef-form-actions">
+
+                <button type="submit"
+                        class="ef-btn ef-btn-primary">
+                    Guardar cambios
+                </button>
+
+                @Html.ActionLink("Cancelar", "Index",
+                    "TiposEntrada", null,
+                    new { @class = "ef-btn ef-btn-soft" })
+
+            </div>
+        }
+
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

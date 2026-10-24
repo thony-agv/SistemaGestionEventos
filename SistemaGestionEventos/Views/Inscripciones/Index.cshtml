@@ -1,0 +1,216 @@
+﻿
+@model List<SistemaGestionEventos.Models.Inscripcion>
+@using System.Linq
+@using System.Web.Mvc
+
+@{
+    ViewBag.Title = "Inscripciones";
+
+    int activas = Model == null ? 0 :
+        Model.Count(i => i.Estado == "Activa");
+
+    int canceladas = Model == null ? 0 :
+        Model.Count(i => i.Estado == "Cancelada");
+}
+
+<div class="ef-page">
+
+    <div class="ef-header">
+        <div>
+            <h2>Gestión de Inscripciones</h2>
+            <p>Controla los participantes inscritos en cada evento.</p>
+        </div>
+
+        @Html.ActionLink("Nueva inscripción",
+            "Crear", "Inscripciones", null,
+            new { @class = "ef-btn ef-btn-primary" })
+    </div>
+
+    @if (TempData["MensajeExito"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["MensajeExito"]
+        </div>
+    }
+
+    @if (TempData["MensajeError"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["MensajeError"]
+        </div>
+    }
+
+    <div class="ef-stats">
+
+        <div class="ef-stat">
+            <span>Total de inscripciones</span>
+            <strong>@(Model == null ? 0 : Model.Count)</strong>
+        </div>
+
+        <div class="ef-stat">
+            <span>Inscripciones activas</span>
+            <strong>@activas</strong>
+        </div>
+
+        <div class="ef-stat">
+            <span>Inscripciones canceladas</span>
+            <strong>@canceladas</strong>
+        </div>
+
+    </div>
+
+    <div class="ef-card">
+
+        <div class="ef-header">
+            <div>
+                <h4>Listado de inscripciones</h4>
+                <p>Filtra los registros según el evento.</p>
+            </div>
+        </div>
+
+        @using (Html.BeginForm("Index", "Inscripciones",
+            FormMethod.Get))
+        {
+            <div class="row">
+
+                <div class="col-md-6 ef-field">
+
+                    <label class="form-label">
+                        Filtrar por evento
+                    </label>
+
+                    @Html.DropDownList(
+                        "eventoId",
+                        (IEnumerable<SelectListItem>)
+                            ViewBag.EventosFiltro,
+                        "Todos los eventos",
+                        new { @class = "form-control" })
+
+                </div>
+
+                <div class="col-md-6 ef-filter-actions">
+
+                    <button type="submit"
+                            class="ef-btn ef-btn-primary">
+                        Filtrar
+                    </button>
+
+                    @Html.ActionLink("Limpiar",
+                        "Index", "Inscripciones", null,
+                        new { @class = "ef-btn ef-btn-soft" })
+
+                </div>
+
+            </div>
+        }
+
+        <div class="table-responsive">
+
+            <table class="table ef-table">
+                <thead>
+                    <tr>
+                        <th>Participante</th>
+                        <th>Evento</th>
+                        <th>Tipo de entrada</th>
+                        <th>Fecha de inscripción</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @if (Model != null && Model.Count > 0)
+                    {
+                        foreach (var inscripcion in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <strong>
+                                        @inscripcion.NombreParticipante
+                                    </strong>
+                                </td>
+
+                                <td>@inscripcion.NombreEvento</td>
+
+                                <td>
+                                    @inscripcion.NombreTipoEntrada
+                                </td>
+
+                                <td>
+                                    @inscripcion.FechaInscripcion.ToString(
+                                        "dd/MM/yyyy HH:mm")
+                                </td>
+
+                                <td>
+                                    @if (inscripcion.Estado == "Activa")
+                                    {
+                                        <span class="ef-status ef-status-open">
+                                            Activa
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="ef-status ef-status-closed">
+                                            Cancelada
+                                        </span>
+                                    }
+                                </td>
+
+                                <td>
+                                    <div class="ef-actions">
+
+                                        @Html.ActionLink("Detalles",
+                                            "Detalles",
+                                            new { id = inscripcion.Id },
+                                            new
+                                                 {
+                                                @class = "ef-btn ef-btn-soft ef-btn-sm"
+                                            })
+
+                                        @if (inscripcion.Estado == "Activa")
+                                        {
+                                            using (Html.BeginForm(
+                                                "Cancelar",
+                                                "Inscripciones",
+                                                new { id = inscripcion.Id },
+                                                FormMethod.Post))
+                                            {
+                                                @Html.AntiForgeryToken()
+
+                                                <button type="submit"
+                                                        class="ef-btn ef-btn-danger ef-btn-sm"
+                                                        onclick="return confirm('¿Deseas cancelar esta inscripción?');">
+                                                    Cancelar
+                                                </button>
+                                            }
+                                        }
+
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center">
+                                <div class="ef-empty">
+                                    <h4>No hay inscripciones registradas</h4>
+                                    <p class="ef-muted">
+                                        Registra participantes en un evento
+                                        para comenzar.
+                                    </p>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+
+        </div>
+
+    </div>
+
+</div>

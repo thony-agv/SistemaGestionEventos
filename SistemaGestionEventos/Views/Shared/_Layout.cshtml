@@ -1,0 +1,279 @@
+﻿
+@{
+    var controladorActual =
+        (ViewContext.RouteData.Values["controller"] ?? "")
+        .ToString();
+
+    var tituloPagina = ViewBag.Title ?? "Panel principal";
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+
+    <title>@tituloPagina | EventFlow</title>
+
+    @Styles.Render("~/Content/css")
+
+    <link rel="stylesheet"
+          href="@Url.Content("~/Content/EventFlow.css")" />
+</head>
+
+<body class="ef-app-body">
+
+    <div class="ef-shell">
+
+        <!-- MENÚ LATERAL -->
+        <aside class="ef-sidebar" id="efSidebar">
+
+            <div class="ef-sidebar-top">
+
+                <a href="@Url.Action("Index", "Home")"
+                   class="ef-brand">
+
+                    <span class="ef-brand-mark">E</span>
+
+                    <span class="ef-brand-text">
+                        <strong>EventFlow</strong>
+                        <small>Gestión de eventos</small>
+                    </span>
+
+                </a>
+
+                <button type="button"
+                        class="ef-sidebar-close"
+                        id="efCloseMenu"
+                        aria-label="Cerrar menú">
+                    &times;
+                </button>
+
+            </div>
+
+            <div class="ef-sidebar-divider"></div>
+
+            <nav class="ef-navigation"
+                 aria-label="Navegación principal">
+
+                <span class="ef-nav-heading">
+                    GENERAL
+                </span>
+
+                <a href="@Url.Action("Index", "Home")"
+                   class="ef-nav-link @(controladorActual == "Home" ? "ef-nav-active" : "")">
+
+                    <span class="ef-nav-icon">DB</span>
+                    <span>Panel principal</span>
+
+                </a>
+
+                <span class="ef-nav-heading ef-nav-heading-space">
+                    ADMINISTRACIÓN
+                </span>
+
+                <a href="@Url.Action("Index", "Eventos")"
+                   class="ef-nav-link @(controladorActual == "Eventos" ? "ef-nav-active" : "")">
+
+                    <span class="ef-nav-icon">EV</span>
+                    <span>Eventos</span>
+
+                </a>
+
+                <a href="@Url.Action("Index", "Participantes")"
+                   class="ef-nav-link @(controladorActual == "Participantes" ? "ef-nav-active" : "")">
+
+                    <span class="ef-nav-icon">PA</span>
+                    <span>Participantes</span>
+
+                </a>
+
+                <a href="@Url.Action("Index", "TiposEntrada")"
+                   class="ef-nav-link @(controladorActual == "TiposEntrada" ? "ef-nav-active" : "")">
+
+                    <span class="ef-nav-icon">TE</span>
+                    <span>Tipos de entrada</span>
+
+                </a>
+
+                <span class="ef-nav-heading ef-nav-heading-space">
+                    CONTROL DE ACCESO
+                </span>
+
+                <a href="@Url.Action("Index", "Inscripciones")"
+                   class="ef-nav-link @(controladorActual == "Inscripciones" ? "ef-nav-active" : "")">
+
+                    <span class="ef-nav-icon">IN</span>
+                    <span>Inscripciones</span>
+
+                </a>
+
+                <a href="@Url.Action("Index", "RegistrosEntrada")"
+                   class="ef-nav-link @(controladorActual == "RegistrosEntrada" ? "ef-nav-active" : "")">
+
+                    <span class="ef-nav-icon">AC</span>
+                    <span>Control de entradas</span>
+
+                </a>
+
+            </nav>
+
+            <div class="ef-sidebar-bottom">
+
+                <div class="ef-sidebar-info">
+
+                    <span class="ef-sidebar-info-icon">EF</span>
+
+                    <div>
+                        <strong>EventFlow</strong>
+                        <small>Panel de administración</small>
+                    </div>
+
+                </div>
+
+                <p>Gestión y control de aforo</p>
+
+            </div>
+
+        </aside>
+
+        <!-- FONDO DEL MENÚ EN CELULARES -->
+        <button type="button"
+                class="ef-sidebar-backdrop"
+                id="efMenuBackdrop"
+                aria-label="Cerrar menú de navegación">
+        </button>
+
+        <!-- CONTENIDO -->
+        <div class="ef-workspace">
+
+            <!-- ENCABEZADO SUPERIOR -->
+            <header class="ef-topbar">
+
+                <div class="ef-topbar-left">
+
+                    <button type="button"
+                            class="ef-menu-button"
+                            id="efMenuButton"
+                            aria-label="Abrir menú"
+                            aria-controls="efSidebar"
+                            aria-expanded="false">
+
+                        <span></span>
+                        <span></span>
+                        <span></span>
+
+                    </button>
+
+                    <div class="ef-topbar-titles">
+                        <span>EVENTFLOW / ADMINISTRACIÓN</span>
+                        <h1>@tituloPagina</h1>
+                    </div>
+
+                </div>
+
+                <div class="ef-topbar-right">
+
+                    <span class="ef-topbar-label">
+                        Sistema de eventos
+                    </span>
+
+                    <div class="ef-topbar-avatar"
+                         title="EventFlow">
+                        EF
+                    </div>
+
+                </div>
+
+            </header>
+
+            <!-- CONTENIDO DE CADA MÓDULO -->
+            <main class="ef-main-content"
+                  id="contenidoPrincipal">
+
+                @RenderBody()
+
+            </main>
+
+            <!-- PIE DE PÁGINA -->
+            <footer class="ef-main-footer">
+
+                <span>
+                    EventFlow &copy; @DateTime.Now.Year
+                </span>
+
+                <span>
+                    Sistema de Gestión de Eventos
+                    y Control de Aforo
+                </span>
+
+            </footer>
+
+        </div>
+
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+
+
+    <script>
+            document.addEventListener("DOMContentLoaded", function () {
+
+                var botonAbrir = document.getElementById("efMenuButton");
+                var botonCerrar = document.getElementById("efCloseMenu");
+                var fondo = document.getElementById("efMenuBackdrop");
+                var enlaces = document.querySelectorAll(".ef-nav-link");
+
+                function abrirMenu() {
+                    document.body.classList.add("ef-nav-open");
+
+                    if (botonAbrir) {
+                        botonAbrir.setAttribute("aria-expanded", "true");
+                    }
+                }
+
+                function cerrarMenu() {
+                    document.body.classList.remove("ef-nav-open");
+
+                    if (botonAbrir) {
+                        botonAbrir.setAttribute("aria-expanded", "false");
+                    }
+                }
+
+                // Abrir menú
+                if (botonAbrir) {
+                    botonAbrir.addEventListener("click", abrirMenu);
+                }
+
+                // Cerrar menú
+                if (botonCerrar) {
+                    botonCerrar.addEventListener("click", cerrarMenu);
+                }
+
+                // Cerrar al tocar el fondo
+                if (fondo) {
+                    fondo.addEventListener("click", cerrarMenu);
+                }
+
+                // Cerrar con tecla ESC
+                document.addEventListener("keydown", function (e) {
+                    if (e.key === "Escape") {
+                        cerrarMenu();
+                    }
+                });
+
+                // Cerrar al seleccionar una sección
+                for (var i = 0; i < enlaces.length; i++) {
+                    enlaces[i].addEventListener("click", cerrarMenu);
+                }
+
+            });
+    </script>
+
+    @RenderSection("Scripts", required: false)
+
+</body>
+</html>

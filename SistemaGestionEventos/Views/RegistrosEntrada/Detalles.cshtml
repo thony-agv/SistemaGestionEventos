@@ -1,0 +1,93 @@
+﻿
+@model SistemaGestionEventos.Models.RegistroEntrada
+
+@{
+    ViewBag.Title = "Detalles del ingreso";
+}
+
+<div class="ef-page">
+
+    <div class="ef-header">
+        <div>
+            <h2>Detalles del ingreso</h2>
+            <p>Información del acceso registrado al evento.</p>
+        </div>
+
+        <span class="ef-status ef-status-open">
+            Ingreso confirmado
+        </span>
+    </div>
+
+    <div class="ef-card ef-form-card">
+
+        <h4>Registro de entrada #@Model.Id</h4>
+
+        <table class="table ef-table">
+            <tbody>
+
+                <tr>
+                    <th>Identificador</th>
+                    <td>@Model.Id</td>
+                </tr>
+
+                <tr>
+                    <th>Participante</th>
+                    <td>@Model.NombreParticipante</td>
+                </tr>
+
+                <tr>
+                    <th>Evento</th>
+                    <td>@Model.NombreEvento</td>
+                </tr>
+
+                <tr>
+                    <th>Tipo de entrada</th>
+                    <td>@Model.NombreTipoEntrada</td>
+                </tr>
+
+                <tr>
+                    <th>Número de inscripción</th>
+                    <td>@Model.InscripcionId</td>
+                </tr>
+
+                <tr>
+                    <th>Fecha y hora de ingreso</th>
+                    <td>
+                        @Model.FechaIngreso.ToString(
+                            "dd/MM/yyyy HH:mm:ss")
+                    </td>
+                </tr>
+
+                <tr>
+                    <th>Estado</th>
+                    <td>
+                        <span class="ef-status ef-status-open">
+                            Registrado
+                        </span>
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
+
+        <div class="ef-form-actions">
+
+            @Html.ActionLink("Volver al listado",
+                "Index", "RegistrosEntrada",
+                new { eventoId = Model.EventoId },
+                new { @class = "ef-btn ef-btn-soft" })
+
+            @Html.ActionLink("Ver inscripción",
+                "Detalles", "Inscripciones",
+                new { id = Model.InscripcionId },
+                new { @class = "ef-btn ef-btn-secondary" })
+
+            @Html.ActionLink("Consultar evento",
+                "Detalles", "Eventos",
+                new { id = Model.EventoId },
+                new { @class = "ef-btn ef-btn-primary" })
+
+        </div>
+
+    </div>
+</div>

@@ -1,0 +1,299 @@
+﻿
+@model SistemaGestionEventos.ViewModels.DashboardViewModel
+@using System
+
+@{
+    ViewBag.Title = "Panel principal";
+}
+
+<div class="ef-dashboard">
+
+    <!-- BIENVENIDA -->
+    <section class="ef-dash-hero">
+
+        <div class="ef-dash-hero-content">
+
+            <span class="ef-dash-label">
+                SISTEMA DE GESTIÓN DE EVENTOS
+            </span>
+
+            <h1>Bienvenido a EventFlow</h1>
+
+            <p>
+                Organiza tus eventos, administra participantes
+                y controla las inscripciones e ingresos desde
+                un solo lugar.
+            </p>
+
+            <div class="ef-dash-hero-actions">
+
+                @Html.ActionLink("Crear evento",
+                    "Crear", "Eventos", null,
+                    new { @class = "ef-btn ef-dash-btn-light" })
+
+                @Html.ActionLink("Registrar inscripción",
+                    "Crear", "Inscripciones", null,
+                    new { @class = "ef-btn ef-dash-btn-outline" })
+
+            </div>
+
+        </div>
+
+        <div class="ef-dash-decoration" aria-hidden="true">
+            <div class="ef-dash-circle ef-circle-one"></div>
+            <div class="ef-dash-circle ef-circle-two"></div>
+            <div class="ef-dash-circle ef-circle-three"></div>
+        </div>
+
+    </section>
+
+    @if (ViewBag.MensajeError != null)
+    {
+        <div class="alert alert-danger">
+            @ViewBag.MensajeError
+        </div>
+    }
+
+    <!-- INDICADORES GENERALES -->
+    <div class="ef-dash-section-title">
+        <div>
+            <h2>Resumen general</h2>
+            <p>Información actual de los registros del sistema.</p>
+        </div>
+    </div>
+
+    <section class="ef-dash-stats">
+
+        <div class="ef-dash-stat ef-stat-purple">
+            <div class="ef-dash-stat-top">
+                <span class="ef-dash-stat-icon">EV</span>
+                <span class="ef-dash-stat-tag">Eventos</span>
+            </div>
+            <strong>@Model.TotalEventos</strong>
+            <p>Total de eventos</p>
+        </div>
+
+        <div class="ef-dash-stat ef-stat-coral">
+            <div class="ef-dash-stat-top">
+                <span class="ef-dash-stat-icon">AB</span>
+                <span class="ef-dash-stat-tag">Estado</span>
+            </div>
+            <strong>@Model.EventosAbiertos</strong>
+            <p>Eventos abiertos</p>
+        </div>
+
+        <div class="ef-dash-stat ef-stat-plum">
+            <div class="ef-dash-stat-top">
+                <span class="ef-dash-stat-icon">PA</span>
+                <span class="ef-dash-stat-tag">Personas</span>
+            </div>
+            <strong>@Model.TotalParticipantes</strong>
+            <p>Participantes registrados</p>
+        </div>
+
+        <div class="ef-dash-stat ef-stat-purple">
+            <div class="ef-dash-stat-top">
+                <span class="ef-dash-stat-icon">IN</span>
+                <span class="ef-dash-stat-tag">Reservas</span>
+            </div>
+            <strong>@Model.InscripcionesActivas</strong>
+            <p>Inscripciones activas</p>
+        </div>
+
+        <div class="ef-dash-stat ef-stat-coral">
+            <div class="ef-dash-stat-top">
+                <span class="ef-dash-stat-icon">AC</span>
+                <span class="ef-dash-stat-tag">Ingresos</span>
+            </div>
+            <strong>@Model.TotalIngresos</strong>
+            <p>Entradas registradas</p>
+        </div>
+
+        <div class="ef-dash-stat ef-stat-plum">
+            <div class="ef-dash-stat-top">
+                <span class="ef-dash-stat-icon">CU</span>
+                <span class="ef-dash-stat-tag">Aforo</span>
+            </div>
+            <strong>@Model.CuposDisponibles</strong>
+            <p>Cupos disponibles</p>
+        </div>
+
+    </section>
+
+    <!-- EVENTOS Y ACCESOS RAPIDOS -->
+    <section class="ef-dash-content">
+
+        <!-- EVENTOS VIGENTES -->
+        <div class="ef-dash-panel">
+
+            <div class="ef-dash-panel-header">
+                <div>
+                    <h3>Próximos eventos</h3>
+                    <p>Eventos abiertos que aún no han finalizado.</p>
+                </div>
+
+                @Html.ActionLink("Ver todos",
+                    "Index", "Eventos", null,
+                    new { @class = "ef-dash-text-link" })
+            </div>
+
+            @if (Model.EventosVigentes != null &&
+                 Model.EventosVigentes.Count > 0)
+            {
+                <div class="table-responsive">
+
+                    <table class="table ef-dash-table">
+                        <thead>
+                            <tr>
+                                <th>Evento</th>
+                                <th>Fecha</th>
+                                <th>Disponibilidad</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            @foreach (var evento in Model.EventosVigentes)
+                            {
+                                int porcentaje =
+                                    evento.CapacidadMaxima > 0
+                                    ? (int)Math.Min(100,
+                                        Math.Round(
+                                            evento.Inscritos * 100.0 /
+                                            evento.CapacidadMaxima))
+                                    : 0;
+
+                                <tr>
+                                    <td>
+                                        <strong>@evento.Nombre</strong>
+
+                                        <span class="ef-dash-subtext">
+                                            @evento.Lugar
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        @(evento.FechaInicio.HasValue
+                                            ? evento.FechaInicio.Value.ToString(
+                                                "dd/MM/yyyy")
+                                            : "-")
+                                    </td>
+
+                                    <td>
+                                        <div class="ef-dash-capacity">
+
+                                            <span>
+                                                @evento.Inscritos /
+                                                @evento.CapacidadMaxima
+                                            </span>
+
+                                            <div class="ef-dash-progress">
+                                                <div class="ef-dash-progress-bar"
+                                                     style="width: @(porcentaje)%;">
+                                                </div>
+                                            </div>
+
+                                            <small>
+                                                @evento.CuposDisponibles
+                                                cupos libres
+                                            </small>
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        @Html.ActionLink("Ver",
+                                            "Detalles", "Eventos",
+                                            new { id = evento.Id },
+                                            new
+                                                 {
+                                                @class = "ef-btn ef-btn-soft ef-btn-sm"
+                                            })
+                                    </td>
+                                </tr>
+                            }
+
+                        </tbody>
+                    </table>
+
+                </div>
+            }
+            else
+            {
+                <div class="ef-dash-empty">
+                    <div class="ef-dash-empty-icon">EV</div>
+
+                    <h4>No hay eventos próximos</h4>
+
+                    <p>
+                        Crea un evento para comenzar a administrar
+                        participantes y controlar su aforo.
+                    </p>
+
+                    @Html.ActionLink("Crear evento",
+                        "Crear", "Eventos", null,
+                        new { @class = "ef-btn ef-btn-primary" })
+                </div>
+            }
+
+        </div>
+
+        <!-- ACCESOS RAPIDOS -->
+        <aside class="ef-dash-panel ef-dash-shortcuts">
+
+            <div class="ef-dash-panel-header">
+                <div>
+                    <h3>Accesos rápidos</h3>
+                    <p>Operaciones frecuentes.</p>
+                </div>
+            </div>
+
+            <a href="@Url.Action("Crear", "Eventos")"
+               class="ef-dash-shortcut">
+                <span class="ef-dash-shortcut-icon">EV</span>
+                <span class="ef-dash-shortcut-text">
+                    <strong>Nuevo evento</strong>
+                    <small>Programar una actividad</small>
+                </span>
+                <span class="ef-dash-arrow">→</span>
+            </a>
+
+            <a href="@Url.Action("Crear", "Participantes")"
+               class="ef-dash-shortcut">
+                <span class="ef-dash-shortcut-icon">PA</span>
+                <span class="ef-dash-shortcut-text">
+                    <strong>Nuevo participante</strong>
+                    <small>Registrar una persona</small>
+                </span>
+                <span class="ef-dash-arrow">→</span>
+            </a>
+
+            <a href="@Url.Action("Crear", "Inscripciones")"
+               class="ef-dash-shortcut">
+                <span class="ef-dash-shortcut-icon">IN</span>
+                <span class="ef-dash-shortcut-text">
+                    <strong>Nueva inscripción</strong>
+                    <small>Reservar un espacio</small>
+                </span>
+                <span class="ef-dash-arrow">→</span>
+            </a>
+
+            <a href="@Url.Action("Crear", "RegistrosEntrada")"
+               class="ef-dash-shortcut">
+                <span class="ef-dash-shortcut-icon">AC</span>
+                <span class="ef-dash-shortcut-text">
+                    <strong>Registrar ingreso</strong>
+                    <small>Confirmar acceso al evento</small>
+                </span>
+                <span class="ef-dash-arrow">→</span>
+            </a>
+
+        </aside>
+
+    </section>
+
+    <div class="ef-dash-footer">
+        EventFlow · Sistema de Gestión de Eventos y Control de Aforo
+    </div>
+
+</div>

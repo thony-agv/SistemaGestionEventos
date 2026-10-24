@@ -1,0 +1,139 @@
+﻿
+@model List<SistemaGestionEventos.Models.Participante>
+
+@{
+    ViewBag.Title = "Participantes";
+}
+
+<div class="ef-page">
+
+    <div class="ef-header">
+        <div>
+            <h2>Gestión de Participantes</h2>
+            <p>Administra las personas registradas en el sistema.</p>
+        </div>
+
+        @Html.ActionLink("Nuevo participante", "Crear",
+            "Participantes", null,
+            new { @class = "ef-btn ef-btn-primary" })
+    </div>
+
+    @if (TempData["MensajeExito"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["MensajeExito"]
+        </div>
+    }
+
+    @if (TempData["MensajeError"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["MensajeError"]
+        </div>
+    }
+
+    @if (ViewBag.MensajeError != null)
+    {
+        <div class="alert alert-danger">
+            @ViewBag.MensajeError
+        </div>
+    }
+
+    <div class="ef-card">
+
+        <h4>Participantes registrados</h4>
+
+        <p class="ef-muted" style="margin-bottom:20px;">
+            Total de participantes:
+            <strong>@(Model != null ? Model.Count : 0)</strong>
+        </p>
+
+        <div class="table-responsive">
+
+            <table class="table ef-table">
+                <thead>
+                    <tr>
+                        <th>Documento</th>
+                        <th>Nombre completo</th>
+                        <th>Correo electrónico</th>
+                        <th>Teléfono</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (Model != null && Model.Count > 0)
+                    {
+                        foreach (var participante in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <strong>@participante.Documento</strong>
+                                </td>
+
+                                <td>@participante.NombreCompleto</td>
+
+                                <td>
+                                    @(string.IsNullOrWhiteSpace(participante.Correo)
+                                        ? "No registrado"
+                                        : participante.Correo)
+                                </td>
+
+                                <td>
+                                    @(string.IsNullOrWhiteSpace(participante.Telefono)
+                                        ? "No registrado"
+                                        : participante.Telefono)
+                                </td>
+
+                                <td>
+                                    <div class="ef-actions">
+
+                                        @Html.ActionLink("Detalles",
+                                            "Detalles",
+                                            new { id = participante.Id },
+                                            new
+                                                 {
+                                                @class = "ef-btn ef-btn-soft ef-btn-sm"
+                                            })
+
+                                        @Html.ActionLink("Editar",
+                                            "Editar",
+                                            new { id = participante.Id },
+                                            new
+                                                 {
+                                                @class = "ef-btn ef-btn-secondary ef-btn-sm"
+                                            })
+
+                                        @Html.ActionLink("Eliminar",
+                                            "Eliminar",
+                                            new { id = participante.Id },
+                                            new
+                                                 {
+                                                @class = "ef-btn ef-btn-danger ef-btn-sm"
+                                            })
+
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center">
+                                <div style="padding:35px;">
+                                    <h4>No hay participantes registrados</h4>
+                                    <p class="ef-muted">
+                                        Registra un participante para comenzar.
+                                    </p>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+
+</div>

@@ -1,0 +1,201 @@
+﻿
+@model SistemaGestionEventos.Models.Evento
+@using System
+@using System.Globalization
+
+@{
+    ViewBag.Title = "Detalles del evento";
+
+    int inscritos = ViewBag.TotalInscritos == null
+        ? 0 : (int)ViewBag.TotalInscritos;
+
+    int disponibles = ViewBag.CuposDisponibles == null
+        ? 0 : (int)ViewBag.CuposDisponibles;
+
+    int ingresos = ViewBag.TotalIngresos == null
+        ? 0 : (int)ViewBag.TotalIngresos;
+
+    double porcentaje = Model.CapacidadMaxima > 0
+        ? Math.Min(100.0,
+            inscritos * 100.0 / Model.CapacidadMaxima)
+        : 0;
+
+    string anchoBarra = porcentaje.ToString(
+        "0", CultureInfo.InvariantCulture) + "%";
+}
+
+<div class="ef-page">
+
+    <div class="ef-header">
+        <div>
+            <h2>@Model.Nombre</h2>
+            <p>@Model.Lugar</p>
+        </div>
+
+        @if (Model.Estado == "Abierto")
+        {
+            <span class="ef-status ef-status-open">
+                Abierto
+            </span>
+        }
+        else
+        {
+            <span class="ef-status ef-status-closed">
+                Cerrado
+            </span>
+        }
+    </div>
+
+    @if (TempData["MensajeError"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["MensajeError"]
+        </div>
+    }
+
+    @if (TempData["MensajeExito"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["MensajeExito"]
+        </div>
+    }
+
+    <div class="ef-stats">
+
+        <div class="ef-stat">
+            <span>Capacidad máxima</span>
+            <strong>@Model.CapacidadMaxima</strong>
+        </div>
+
+        <div class="ef-stat">
+            <span>Inscripciones activas</span>
+            <strong>@inscritos</strong>
+        </div>
+
+        <div class="ef-stat">
+            <span>Cupos disponibles</span>
+            <strong>@disponibles</strong>
+        </div>
+
+        <div class="ef-stat">
+            <span>Ingresos registrados</span>
+            <strong>@ingresos</strong>
+        </div>
+
+    </div>
+
+    <div class="ef-card mb-4">
+
+        <h4>Ocupación de inscripciones</h4>
+
+        <div class="progress ef-progress">
+            <div class="progress-bar"
+                 role="progressbar"
+                 style="width: @anchoBarra;"
+                 aria-valuenow="@inscritos"
+                 aria-valuemin="0"
+                 aria-valuemax="@Model.CapacidadMaxima">
+            </div>
+        </div>
+
+        <p class="ef-muted mt-2">
+            @inscritos de @Model.CapacidadMaxima espacios reservados.
+        </p>
+
+        <hr />
+
+        <h4>Información del evento</h4>
+
+        <table class="table ef-table">
+            <tbody>
+                <tr>
+                    <th>Nombre</th>
+                    <td>@Model.Nombre</td>
+                </tr>
+
+                <tr>
+                    <th>Descripción</th>
+                    <td>
+                        @(string.IsNullOrWhiteSpace(Model.Descripcion)
+                            ? "Sin descripción"
+                            : Model.Descripcion)
+                    </td>
+                </tr>
+
+                <tr>
+                    <th>Lugar</th>
+                    <td>@Model.Lugar</td>
+                </tr>
+
+                <tr>
+                    <th>Fecha de inicio</th>
+                    <td>
+                        @(Model.FechaInicio.HasValue
+                            ? Model.FechaInicio.Value.ToString(
+                                "dd/MM/yyyy HH:mm")
+                            : "-")
+                    </td>
+                </tr>
+
+                <tr>
+                    <th>Fecha de finalización</th>
+                    <td>
+                        @(Model.FechaFin.HasValue
+                            ? Model.FechaFin.Value.ToString(
+                                "dd/MM/yyyy HH:mm")
+                            : "-")
+                    </td>
+                </tr>
+
+                <tr>
+                    <th>Estado</th>
+                    <td>@Model.Estado</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="ef-actions mt-4">
+
+            @Html.ActionLink("Volver a eventos",
+                "Index", "Eventos", null,
+                new { @class = "ef-btn ef-btn-soft" })
+
+            @if (Model.Estado == "Abierto")
+            {
+                @Html.ActionLink("Editar evento",
+                    "Editar", "Eventos",
+                    new { id = Model.Id },
+                    new { @class = "ef-btn ef-btn-secondary" })
+            }
+
+        </div>
+
+    </div>
+
+    @if (Model.Estado == "Abierto" &&
+         Model.FechaFin.HasValue &&
+         Model.FechaFin.Value <= DateTime.Now)
+    {
+        <div class="ef-card">
+            <h4>Cerrar evento</h4>
+
+            <p class="ef-muted">
+                El evento ya alcanzó su fecha de finalización.
+                Puedes cerrarlo para impedir nuevas inscripciones.
+            </p>
+
+            @using (Html.BeginForm("Cerrar", "Eventos",
+                new { id = Model.Id }, FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+
+                <button type="submit"
+                        class="ef-btn ef-btn-danger"
+                        onclick="return confirm('¿Deseas cerrar este evento?');">
+                    Cerrar evento
+                </button>
+            }
+        </div>
+    }
+
+</div>

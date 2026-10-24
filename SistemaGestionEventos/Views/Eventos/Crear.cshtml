@@ -1,0 +1,144 @@
+﻿
+@model SistemaGestionEventos.Models.Evento
+
+@{
+    ViewBag.Title = "Nuevo evento";
+}
+
+<div class="ef-page">
+
+    <div class="ef-header">
+        <div>
+            <h2>Registrar evento</h2>
+            <p>Ingresa la información del nuevo evento.</p>
+        </div>
+    </div>
+
+    <div class="ef-card ef-form-card">
+
+        @using (Html.BeginForm("Crear", "Eventos", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+
+            @Html.ValidationSummary(true, "",
+                new { @class = "text-danger mb-3" })
+
+            <div class="row g-3">
+
+                <div class="col-md-12">
+                    @Html.LabelFor(m => m.Nombre,
+                        new { @class = "form-label" })
+
+                    @Html.TextBoxFor(m => m.Nombre,
+                        new
+                             {
+                            @class = "form-control",
+                            maxlength = "150",
+                            placeholder = "Nombre del evento"
+                        })
+
+                    @Html.ValidationMessageFor(m => m.Nombre,
+                        "", new { @class = "text-danger" })
+                </div>
+
+                <div class="col-md-12">
+                    @Html.LabelFor(m => m.Descripcion,
+                        new { @class = "form-label" })
+
+                    @Html.TextAreaFor(m => m.Descripcion,
+                        new
+                             {
+                            @class = "form-control",
+                            rows = "3",
+                            maxlength = "1000",
+                            placeholder = "Descripción del evento"
+                        })
+
+                    @Html.ValidationMessageFor(m => m.Descripcion,
+                        "", new { @class = "text-danger" })
+                </div>
+
+                <div class="col-md-12">
+                    @Html.LabelFor(m => m.Lugar,
+                        new { @class = "form-label" })
+
+                    @Html.TextBoxFor(m => m.Lugar,
+                        new
+                             {
+                            @class = "form-control",
+                            maxlength = "200",
+                            placeholder = "Lugar del evento"
+                        })
+
+                    @Html.ValidationMessageFor(m => m.Lugar,
+                        "", new { @class = "text-danger" })
+                </div>
+
+                <div class="col-md-6">
+                    @Html.LabelFor(m => m.FechaInicio,
+                        new { @class = "form-label" })
+
+                    @Html.TextBoxFor(m => m.FechaInicio,
+                        "{0:yyyy-MM-ddTHH:mm}",
+                        new
+                             {
+                            @class = "form-control",
+                            type = "datetime-local"
+                        })
+
+                    @Html.ValidationMessageFor(m => m.FechaInicio,
+                        "", new { @class = "text-danger" })
+                </div>
+
+                <div class="col-md-6">
+                    @Html.LabelFor(m => m.FechaFin,
+                        new { @class = "form-label" })
+
+                    @Html.TextBoxFor(m => m.FechaFin,
+                        "{0:yyyy-MM-ddTHH:mm}",
+                        new
+                             {
+                            @class = "form-control",
+                            type = "datetime-local"
+                        })
+
+                    @Html.ValidationMessageFor(m => m.FechaFin,
+                        "", new { @class = "text-danger" })
+                </div>
+
+                <div class="col-md-6">
+                    @Html.LabelFor(m => m.CapacidadMaxima,
+                        new { @class = "form-label" })
+
+                    @Html.TextBoxFor(m => m.CapacidadMaxima,
+                        new
+                             {
+                            @class = "form-control",
+                            type = "number",
+                            min = "1"
+                        })
+
+                    @Html.ValidationMessageFor(m => m.CapacidadMaxima,
+                        "", new { @class = "text-danger" })
+                </div>
+
+            </div>
+
+            <div class="ef-form-actions">
+                <button type="submit"
+                        class="ef-btn ef-btn-primary">
+                    Guardar evento
+                </button>
+
+                @Html.ActionLink("Cancelar", "Index",
+                    "Eventos", null,
+                    new { @class = "ef-btn ef-btn-soft" })
+            </div>
+        }
+
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

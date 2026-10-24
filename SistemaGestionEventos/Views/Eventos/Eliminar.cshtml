@@ -1,0 +1,65 @@
+﻿
+@model SistemaGestionEventos.Models.Evento
+
+@{
+    ViewBag.Title = "Eliminar evento";
+}
+
+<div class="ef-page">
+
+    <div class="ef-header">
+        <div>
+            <h2>Eliminar evento</h2>
+            <p>Confirma la eliminación del evento seleccionado.</p>
+        </div>
+    </div>
+
+    <div class="ef-card ef-form-card">
+
+        <div class="alert alert-warning">
+            Esta operación no se puede deshacer.
+            Solo podrás eliminar eventos que no tengan
+            inscripciones ni tipos de entrada relacionados.
+        </div>
+
+        <h4>@Model.Nombre</h4>
+
+        <table class="table ef-table">
+            <tr>
+                <th>Lugar</th>
+                <td>@Model.Lugar</td>
+            </tr>
+
+            <tr>
+                <th>Capacidad máxima</th>
+                <td>@Model.CapacidadMaxima</td>
+            </tr>
+
+            <tr>
+                <th>Estado</th>
+                <td>@Model.Estado</td>
+            </tr>
+        </table>
+
+        @using (Html.BeginForm("Eliminar", "Eventos",
+            new { id = Model.Id }, FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="ef-form-actions">
+
+                <button type="submit"
+                        class="ef-btn ef-btn-danger"
+                        onclick="return confirm('¿Eliminar definitivamente este evento?');">
+                    Confirmar eliminación
+                </button>
+
+                @Html.ActionLink("Cancelar",
+                    "Index", "Eventos", null,
+                    new { @class = "ef-btn ef-btn-soft" })
+
+            </div>
+        }
+
+    </div>
+</div>
